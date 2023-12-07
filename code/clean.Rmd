@@ -1,0 +1,84 @@
+---
+title: "new"
+author: "Haofan Cao"
+date: "2023-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(haven)
+library(readr)
+library(dplyr)
+```
+
+```{r}
+setwd("/Users/will/Library/CloudStorage/OneDrive-个人/Bristol/TB1/AHDS/challenge")
+
+data1 <- read.csv("raw/world-happiness-report-2021.csv")
+data2 <- read.csv("raw/world-happiness-report.csv")
+
+str(data1)
+str(data2)
+```
+```{r}
+View(data1)
+```
+
+```{r}
+View(data2)
+```
+
+```{r}
+names(data1)
+```
+```{r}
+names(data2)
+```
+```{r}
+names(data1)[names(data1) == "Ladder.score"] <- "Life.Ladder"
+names(data1)[names(data1) == "Logged.GDP.per.capita"] <- "Log.GDP.per.capita"
+names(data1)[names(data1) == "Healthy.life.expectancy"] <- "Healthy.life.expectancy.at.birth"
+
+head(data1)
+```
+
+```{r}
+data1$year <- 2021
+
+names(data1)[names(data1) == "Ladder.score"] <- "Life.Ladder"
+
+common_colums <- c("Country.name","year",  "Life.Ladder", "Log.GDP.per.capita", "Social.support", "Healthy.life.expectancy.at.birth", "Freedom.to.make.life.choices", "Generosity", "Perceptions.of.corruption")
+
+combined_data <- rbind(data1[,common_colums], data2[,common_colums])
+
+head(combined_data)
+```
+
+```{r}
+View(combined_data)
+```
+
+```{r}
+final_data <- subset(combined_data, year >= 2017)
+View(final_data)
+```
+
+```{r}
+# check missing values
+colSums(is.na(final_data))
+```
+
+```{r}
+# remove missing values
+final_data <- na.omit(final_data)
+colSums(is.na(final_data))
+```
+
+```{r}
+View(final_data)
+```
+
+```{r}
+write.csv(final_data, "clean/cleaned_dataset.csv")
+```
+
