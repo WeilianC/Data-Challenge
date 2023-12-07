@@ -79,6 +79,6 @@ View(final_data)
 ```
 
 ```{r}
-write.csv(final_data, "clean/cleaned_dataset.csv")
+write.csv(final_data, "../clean/cleaned_dataset.csv")
 ```
 

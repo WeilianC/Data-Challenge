@@ -1,0 +1,103 @@
+---
+title: '127'
+author: "Haofan Cao"
+date: "2023-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(haven)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
+
+```{r}
+setwd("/Users/will/Library/CloudStorage/OneDrive-个人/Bristol/TB1/AHDS/challenge")
+data <- read.csv("clean/cleaned_dataset.csv")
+glimpse(data)
+```
+
+```{r}
+model <- lm(Life.Ladder ~ Log.GDP.per.capita + Social.support + Healthy.life.expectancy.at.birth + Freedom.to.make.life.choices + Generosity + Perceptions.of.corruption, data = data)
+
+summary(model)
+plot(model)
+```
+
+```{r}
+model_interaction_gdp_support <- lm(Life.Ladder ~ Log.GDP.per.capita * Social.support + Healthy.life.expectancy.at.birth + Freedom.to.make.life.choices + Generosity + Perceptions.of.corruption, data = data)
+
+summary(model_interaction_gdp_support)
+```
+
+```{r}
+model_interaction_gdp_health <- lm(Life.Ladder ~ Log.GDP.per.capita * Healthy.life.expectancy.at.birth + 
+                                   Social.support + Freedom.to.make.life.choices + 
+                                   Generosity + Perceptions.of.corruption, 
+                                   data = data)
+summary(model_interaction_gdp_health)
+```
+
+```{r}
+model_interaction_support_freedom <- lm(Life.Ladder ~ Log.GDP.per.capita + Freedom.to.make.life.choices * 
+                                      Social.support + Healthy.life.expectancy.at.birth + 
+                                      Generosity + Perceptions.of.corruption, 
+                                      data = data)
+summary(model_interaction_support_freedom)
+```
+```{r}
+dim(data)
+```
+
+
+
+
+```{r}
+top10_data_2021 <- data %>%
+  filter(year == 2021) %>%
+  arrange(desc(Life.Ladder)) %>%
+  top_n(10, wt = Life.Ladder)
+
+long_data <- top10_data_2021 %>%
+  select(Country.name, Life.Ladder, Log.GDP.per.capita, Social.support, 
+         Healthy.life.expectancy.at.birth, Freedom.to.make.life.choices, 
+         Generosity, Perceptions.of.corruption) %>%
+  gather(key = "factor", value = "value", -Country.name)
+
+ggplot(long_data, aes(x = Country.name, y = value, color = factor)) +
+  geom_point(position = position_jitter(width = 0.2)) +
+  facet_wrap(~ factor, scales = "free_y") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Top 10 Countries in 2021 Across Various Factors",
+       x = "Factor", y = "Value") +
+  guides(color = guide_legend(title = "Country"))
+
+ggsave("../visualisation/top10_countries_factors_2021_facetgrid.png", width = 12, height = 8)
+
+
+```
+
+
+```{r}
+long_data1 <- gather(data, key = "variable", value = "value", -Life.Ladder, -year, -Country.name, -X)
+
+ggplot(long_data1, aes(x = value, y = Life.Ladder)) +
+  geom_point() +  
+  facet_wrap(~ variable, scales = "free_x") +
+  labs(title = "Relationship between Life Ladder and Various Factors",
+       x = "Value",
+       y = "Life Ladder") +
+  theme_light()
+
+ggsave("../visualisation/1.png", plot = last_plot(), device = "png", width = 7.29, height = 4.51, units = "in")
+
+```
+
+
+
+
+
+
