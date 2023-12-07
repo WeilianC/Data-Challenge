@@ -18,10 +18,11 @@ File structure:
 │   ├── analysis.Rmd
 │   └── clean.Rmd
 ├── raw
-│   └── healthcare-dataset-stroke-data.csv
+│   ├── world-happiness-report-2021.csv
+│   └── world-happiness-report.csv
 └── visualisation
-    ├── age_group.png
+    ├── 1.png
     ├── app.R
-    └── hypertension.png
+    └── top10_countries_factors_2021_facetgrid.png
 
  
